@@ -1,0 +1,17 @@
+{% extends "item.html" %}
+{% block title %}
+    {{category.name}} > {{item.name}} Edit
+{% endblock %}
+
+{% block content %}
+<form action="{{ url_for('deleteItem', item_id = item.id)}}" method = "post">
+    <p>
+        Are you sure you want to delete "{{item.name}}"? 
+    </p>
+    <div class="form-group">
+        <button type="submit" class="btn btn-primary" id="submit" type="submit">
+            Delete
+        </button>
+    </div>
+</form>
+{% endblock %}

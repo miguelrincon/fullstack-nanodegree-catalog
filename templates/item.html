@@ -24,10 +24,13 @@
     {% for item in items %}
     <a class="list-group-item" href = "{{url_for('showItem', item_id = item.id)}}">{{item.name}}</a>
     {% endfor %}
+    <a class="list-group-item" href = "{{url_for('createItem', category_id = category.id)}}"> + New Item</a>
 </div>
 {% endblock %}
 
 {% block content %}
+<a href="{{url_for('editItem', item_id = item.id)}}">Edit</a>
+<a href="{{url_for('deleteItem', item_id = item.id)}}">Delete</a>
 <h1>{{item.name}}</h1>
 <p>{{item.description}}</p>
 {% endblock %}

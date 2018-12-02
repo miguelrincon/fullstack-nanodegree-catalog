@@ -17,6 +17,7 @@
     {% for item in items %}
     <a class="list-group-item" href = "{{url_for('showItem', item_id = item.id)}}">{{item.name}}</a>
     {% endfor %}
+    <a class="list-group-item" href = "{{url_for('createItem', category_id = category.id)}}"> + New Item</a>
 </div>
 {% endblock %}
 
