@@ -29,3 +29,6 @@ create_entry(item4)
 
 category2 = Category(name='Food')
 create_entry(category2)
+
+item5 = Item(name='A Cookie', description="The most chocolatastic cookie. Only one.", category=category2)
+create_entry(item5)

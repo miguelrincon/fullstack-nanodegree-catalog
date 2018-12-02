@@ -14,22 +14,41 @@
     <div class="container">
         <div class="row">
             <div class="col">
-                <span class="h1">Catalog</span>
+                <a class="h1" href="/">Catalog</a>
             </div>
         </div>
         <div class="row">
-            <div class="col-sm-3">
-                {% block sidebar %}
+            <div class="col">
+
+                {% block breadcrumb %}
+                <nav aria-label="breadcrumb">
+                    <ol class="breadcrumb">
+                        <li class="breadcrumb-item active">Home</li>
+                    </ol>
+                </nav>
+                {% endblock %}
+                {% block maintabs %}
                 {% if categories %}
-                {% for category in categories %}
-                <a href = "{{url_for('showCategory', category_id = category.id)}}">
-                    <h3>{{category.name}}</h3>
-                </a>
+                <ul class="nav nav-tabs">
+                {% for c in categories %}
+                    <li class="nav-item">
+                        <a class="nav-link {{'active' if category and c.id == category.id else ''}}" 
+                        href="{{url_for('showCategory', category_id = c.id)}}">
+                            {{c.name}}
+                        </a>
+                    </li>
                 {% endfor %}
+                </ul>
                 {% endif %}
                 {% endblock %}
             </div>
-            <div class="col-sm-9">
+        </div>
+        <div class="row">
+            <div class="col-3">
+                {% block nav %}
+                {% endblock %}
+            </div>
+            <div class="col-9">
                 {% with messages = get_flashed_messages() %}
                     {% if messages %}
                         {% for message in messages %}
