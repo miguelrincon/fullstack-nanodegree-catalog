@@ -1,0 +1,12 @@
+{% extends "main.html" %}
+{% block title %}
+    {{category.name}}
+{% endblock %}
+{% block content %}
+<h1>{{category.name}}</h1>
+{% for item in items %}
+<a href = "#">
+    <h3>{{item.name}}</h3>
+</a>
+{% endfor %}
+{% endblock %}

@@ -26,3 +26,6 @@ create_entry(item1)
 create_entry(item2)
 create_entry(item3)
 create_entry(item4)
+
+category2 = Category(name='Food')
+create_entry(category2)
