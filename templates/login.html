@@ -1,0 +1,27 @@
+{% extends "main.html" %}
+{% block head %}
+
+{% endblock %}
+
+{% block title %}
+    Login
+{% endblock %}
+{% block breadcrumb %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+            <a href="/">Home</a>
+        </li>
+        <li class="breadcrumb-item">
+            Login
+        </li>
+    </ol>
+</nav>
+{% endblock %}
+{% block content %}
+<p>
+    <a class="btn btn-primary" href="{{github_authorize_url}}">
+        Login using Github
+    </a>
+</p>
+{% endblock %}

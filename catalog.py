@@ -3,6 +3,12 @@ from scripts.database_setup import Base, User, Category, Item
 
 import sqlalchemy
 from sqlalchemy.orm import sessionmaker
+from flask import session as login_session
+
+import json
+import random
+import string
+import urllib.parse
 
 app = Flask(__name__)
 
@@ -83,6 +89,29 @@ def deleteItem(item_id):
         category = item.category
         items = session.query(Item).filter_by(category_id = category.id).all()
         return render_template('item.delete.html', categories=categories, category=category, items=items,item=item)
+
+@app.route('/login')
+def showLogin():
+    categories = session.query(Category).order_by(sqlalchemy.asc(Category.name)).all()
+
+    state = ''.join(random.choice(string.ascii_uppercase + string.digits) for x in range(32))
+    login_session['state'] = state
+
+    app_id = json.loads(open('config/github_secrets.json', 'r').read())['web']['app_id']
+    github_authorize_url = 'https://github.com/login/oauth/authorize?' + urllib.parse.urlencode({
+        'client_id': app_id,
+        'state': state,
+        'scope': 'user',
+        'redirect_uri': 'http://localhost:5001/github-callback'
+    })
+    return render_template('login.html', github_authorize_url=github_authorize_url, categories=categories)
+
+@app.route('/github-callback')
+def githubCallback():
+    code = request.args.get('code')
+    state = request.args.get('state')
+    return 'Should try to login now... <br>code: %s, state: %s' % (code, state)
+
 
 if __name__ == '__main__':
     app.secret_key = 'my_secret_key'
