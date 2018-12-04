@@ -15,10 +15,19 @@
             <div class="col">
                 <a class="h1" href="/">Catalog</a>
             </div>
-            <div class="col-1">
-                <a class="btn btn-primary" href="/login">
-                    Login
-                </a>
+            <div class="col text-right">
+                {% if user %}
+                    <span class="btn btn-default">
+                        Welcome, {{user.name}}!
+                    </span>
+                    <a class="btn btn-secondary" href="/logout">
+                        Logout
+                    </a>
+                {% else %}
+                    <a class="btn btn-primary" href="/login">
+                        Login
+                    </a>
+                {% endif %}
             </div>
         </div>
         <div class="row">

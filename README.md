@@ -16,3 +16,9 @@ python3 catalog.py
 ```
 
 And visit http://localhost:5001
+
+### Requirements
+
+```
+pip3 install httplib2
+```

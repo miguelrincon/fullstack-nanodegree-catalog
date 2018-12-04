@@ -1,0 +1,30 @@
+{% extends "main.html" %}
+{% block head %}
+
+{% endblock %}
+
+{% block title %}
+    Error
+{% endblock %}
+{% block breadcrumb %}
+<nav aria-label="breadcrumb">
+    <ol class="breadcrumb">
+        <li class="breadcrumb-item">
+            <a href="/">Home</a>
+        </li>
+        <li class="breadcrumb-item">
+            {{code}} error
+        </li>
+    </ol>
+</nav>
+{% endblock %}
+{% block content %}
+<p>
+    <h1>
+        {{code}}
+    </h1>
+    <p>
+        {{message}}
+    </p>
+</p>
+{% endblock %}
