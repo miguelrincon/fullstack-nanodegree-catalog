@@ -40,12 +40,12 @@
 
 {% block content %}
 
-{% if user.id == item.user_id %}
 <div class="float-right">
-    <a href="{{url_for('editItem', item_id = item.id)}}">Edit</a>
-    <a href="{{url_for('deleteItem', item_id = item.id)}}">Delete</a>
+    {% if user.id == item.user_id %}
+        <a href="{{url_for('editItem', item_id = item.id)}}">Edit</a>
+        <a href="{{url_for('deleteItem', item_id = item.id)}}">Delete</a>
+    {% endif %}
 </div>
-{% endif %}
 
 <h1>{{item.name}}</h1>
 <p>{{item.description}}</p>

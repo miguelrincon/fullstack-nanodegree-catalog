@@ -34,6 +34,19 @@ def showCategory(category_id):
     user = getUserInfo()
     return render_template('category.html', user=user, categories=categories, category=category, items=items)
 
+@app.route('/category/<int:category_id>.json')
+def showCategoryJson(category_id):
+    category = session.query(Category).filter_by(id = category_id).one()
+    return jsonify(category.serialize)
+
+@app.route('/category/<int:category_id>/items.json')
+def showCategoryItemsJson(category_id):
+    items = session.query(Item).filter_by(category_id = category_id).all()
+    itemJson = []
+    for i in items:
+        itemJson.append(i.serialize)
+    return jsonify(itemJson)
+
 @app.route('/category/<int:category_id>/create', methods=['GET', 'POST'])
 def createItem(category_id):
     user = getUserInfo()
@@ -67,6 +80,11 @@ def showItem(item_id):
     items = session.query(Item).filter_by(category_id = category.id).all()
     user = getUserInfo()
     return render_template('item.html', user=user, categories=categories, category=category, items=items,item=item)
+
+@app.route('/item/<int:item_id>.json')
+def showItemJson(item_id):
+    item = session.query(Item).filter_by(id = item_id).one()
+    return jsonify(item.serialize)
 
 @app.route('/item/<int:item_id>/edit', methods=['GET', 'POST'])
 def editItem(item_id):
