@@ -3,15 +3,15 @@
 import json
 import random
 import string
-import urllib.parse.urlencode as urlencode
-import httplib2
+from urllib.parse import urlencode
 
+import httplib2
 import sqlalchemy
 from sqlalchemy.orm import sessionmaker
 from flask import session as login_session
-
 from flask import Flask, render_template, request, redirect, \
     jsonify, url_for, flash, make_response
+
 from scripts.database_setup import Base, User, Category, Item
 
 
@@ -21,7 +21,6 @@ app = Flask(__name__)
 engine = sqlalchemy.create_engine(
     'sqlite:///data/catalog.db', connect_args={'check_same_thread': False})
 Base.metadata.bind = engine
-
 DBSession = sessionmaker(bind=engine)
 session = DBSession()
 
@@ -56,6 +55,7 @@ def showCategoryJson(category_id):
 @app.route('/category/<int:category_id>/items.json')
 def showCategoryItemsJson(category_id):
     items = session.query(Item).filter_by(category_id=category_id).all()
+    # Convert list of items to an array for serialization
     itemJson = []
     for i in items:
         itemJson.append(i.serialize)
@@ -65,6 +65,7 @@ def showCategoryItemsJson(category_id):
 @app.route('/category/<int:category_id>/create', methods=['GET', 'POST'])
 def createItem(category_id):
     user = getUserInfo()
+    # Only logged in users can create items
     if(not user):
         return make_response(
             render_template('error.html', code=401,
@@ -73,6 +74,7 @@ def createItem(category_id):
         )
     if request.method == 'POST':
         category = session.query(Category).filter_by(id=category_id).one()
+        # Create an item with data, category and user and show it
         item = Item()
         item.name = request.form['name']
         item.description = request.form['description']
@@ -83,6 +85,7 @@ def createItem(category_id):
         flash('"%s" created succesfully!' % item.name)
         return redirect(url_for('showItem', item_id=item.id))
     else:
+        # Render the create item form
         categories = session.query(Category).order_by(
             sqlalchemy.asc(Category.name)).all()
         category = session.query(Category).filter_by(id=category_id).one()
@@ -116,12 +119,14 @@ def showItemJson(item_id):
 @app.route('/item/<int:item_id>/edit', methods=['GET', 'POST'])
 def editItem(item_id):
     user = getUserInfo()
+    # Only logged in users can edit items
     if(not user):
         return make_response(
             render_template('error.html', code=401,
                             message='Please login to delete items.'),
             401
         )
+    # Only authors of items can edit their items
     item = session.query(Item).filter_by(id=item_id).one()
     if(user.id != item.user_id):
         return make_response(
@@ -151,12 +156,14 @@ def editItem(item_id):
 @app.route('/item/<int:item_id>/delete', methods=['GET', 'POST'])
 def deleteItem(item_id):
     user = getUserInfo()
+    # Only logged in users can delete items
     if(not user):
         return make_response(
             render_template('error.html', code=401,
                             message='Please login to delete items.'),
             401
         )
+    # Only authors of items can delete their items
     item = session.query(Item).filter_by(id=item_id).one()
     if(user.id != item.user_id):
         return make_response(
@@ -171,6 +178,7 @@ def deleteItem(item_id):
         flash('"%s" deleted succesfully!' % item.name)
         return redirect(url_for('showCategory', category_id=category_id))
     else:
+        # Render a simple form with single button to confirm delete
         categories = session.query(Category).order_by(
             sqlalchemy.asc(Category.name)).all()
         category = item.category
@@ -185,12 +193,16 @@ def showLogin():
     categories = session.query(Category).order_by(
         sqlalchemy.asc(Category.name)).all()
 
+    # Generate a random string to use as an unguessable "state"
     state = ''.join(random.choice(string.ascii_uppercase + string.digits)
                     for x in range(32))
     login_session['state'] = state
 
     app_id = json.loads(open('config/github_secrets.json',
                              'r').read())['web']['app_id']
+
+    # Create Github Oauth API URL, see:
+    # https://developer.github.com/apps/building-oauth-apps/authorizing-oauth-apps/#1-request-a-users-github-identity
     github_authorize_url = 'https://github.com/login/oauth/authorize?' + \
         urlencode({
             'client_id': app_id,
@@ -211,6 +223,8 @@ def logout():
     app_secret = json.loads(
         open('config/github_secrets.json', 'r').read())['web']['app_secret']
 
+    # Revoke a session token, see:
+    # https://developer.github.com/v3/oauth_authorizations/#delete-an-authorization
     github_access_token_revoke_url = \
         'https://api.github.com/applications/%s/tokens/%a' % (
             app_id, access_token)
@@ -227,6 +241,8 @@ def logout():
             500
         )
         return response
+    
+    # Delete all information of user on session
     del login_session['name']
     del login_session['email']
     del login_session['picture']
@@ -248,6 +264,8 @@ def githubCallback():
         )
         return response
 
+    # Request long term access token from Github Oauth API:
+    # https://developer.github.com/apps/building-oauth-apps/authorizing-oauth-apps/#2-users-are-redirected-back-to-your-site-by-github
     app_id = json.loads(open('config/github_secrets.json',
                              'r').read())['web']['app_id']
     app_secret = json.loads(
@@ -287,6 +305,8 @@ def githubCallback():
     login_session['github_access_token'] = json.loads(token_content)[
         'access_token']
 
+    # Request user information from Oauth API
+    # https://developer.github.com/apps/building-oauth-apps/authorizing-oauth-apps/#3-use-the-access-token-to-access-the-api
     github_api_url = 'https://api.github.com/user'
     auth_header = 'token ' + login_session['github_access_token']
     (user_response, user_content) = h.request(
@@ -294,6 +314,8 @@ def githubCallback():
         method='GET',
         headers={'Accept': 'application/json', 'Authorization': auth_header})
     user_result = json.loads(user_content)
+
+    # If user has no visible email in their profile, authentication can't work
     if user_result['email'] is None:
         response = make_response(
             render_template(
@@ -322,6 +344,7 @@ def githubCallback():
 
 
 def createUser(login_session):
+    '''Creates a new user in database and returns its new id'''
     newUser = User(
         name=login_session['name'],
         email=login_session['email'],
@@ -333,6 +356,7 @@ def createUser(login_session):
 
 
 def getUserInfo():
+    '''Gets information from database of currently logged in user'''
     try:
         user_id = login_session['user_id']
         user = session.query(User).filter_by(id=user_id).one()
@@ -342,6 +366,7 @@ def getUserInfo():
 
 
 def getUserID(email):
+    '''Gets user id by email'''
     try:
         user = session.query(User).filter_by(email=email).one()
         return user.id
