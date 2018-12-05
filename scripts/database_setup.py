@@ -8,6 +8,7 @@ from sqlalchemy.sql import func
 
 Base = declarative_base()
 
+
 class User(Base):
     __tablename__ = 'user'
 
@@ -16,7 +17,8 @@ class User(Base):
     email = Column(String(250), unique=True, nullable=False)
     picture = Column(String(500))
     created_at = Column(DateTime, default=func.now(), nullable=False)
-    updated_at = Column(DateTime, default=func.now(), onupdate=func.now(), nullable=False)
+    updated_at = Column(DateTime, default=func.now(),
+                        onupdate=func.now(), nullable=False)
 
     @property
     def serialize(self):
@@ -39,7 +41,8 @@ class Category(Base):
     user_id = Column(Integer, ForeignKey('user.id'))
     user = relationship(User)
     created_at = Column(DateTime, default=func.now(), nullable=False)
-    updated_at = Column(DateTime, default=func.now(), onupdate=func.now(), nullable=False)
+    updated_at = Column(DateTime, default=func.now(),
+                        onupdate=func.now(), nullable=False)
 
     @property
     def serialize(self):
@@ -51,6 +54,7 @@ class Category(Base):
             'created_at': self.created_at,
             'updated_at': self.updated_at
         }
+
 
 class Item(Base):
     __tablename__ = 'item'
@@ -65,7 +69,8 @@ class Item(Base):
     user = relationship(User)
 
     created_at = Column(DateTime, default=func.now(), nullable=False)
-    updated_at = Column(DateTime, default=func.now(), onupdate=func.now(), nullable=False)
+    updated_at = Column(DateTime, default=func.now(),
+                        onupdate=func.now(), nullable=False)
 
     @property
     def serialize(self):
