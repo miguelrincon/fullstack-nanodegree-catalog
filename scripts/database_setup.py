@@ -8,7 +8,6 @@ from sqlalchemy.sql import func
 
 Base = declarative_base()
 
-
 class User(Base):
     __tablename__ = 'user'
 
@@ -81,5 +80,5 @@ class Item(Base):
 
 
 engine = create_engine('sqlite:///data/catalog.db')
-
 Base.metadata.create_all(engine)
+engine.dispose()

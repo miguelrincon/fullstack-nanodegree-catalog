@@ -23,23 +23,32 @@ session = DBSession()
 @app.route('/')
 def showHome():
     categories = session.query(Category).order_by(sqlalchemy.asc(Category.name)).all()
-    return render_template('home.html', user=getUserInfo(), categories=categories)
+    user = getUserInfo()
+    return render_template('home.html', user=user, categories=categories)
 
 @app.route('/category/<int:category_id>')
 def showCategory(category_id):
     categories = session.query(Category).order_by(sqlalchemy.asc(Category.name)).all()
     category = session.query(Category).filter_by(id = category_id).one()
     items = session.query(Item).filter_by(category_id = category_id).all()
-    return render_template('category.html', user=getUserInfo(), categories=categories, category=category, items=items)
+    user = getUserInfo()
+    return render_template('category.html', user=user, categories=categories, category=category, items=items)
 
 @app.route('/category/<int:category_id>/create', methods=['GET', 'POST'])
 def createItem(category_id):
+    user = getUserInfo()
+    if(not user):
+        return make_response(
+            render_template('error.html', code=401, message='Please login to create items.'),
+            401
+        )
     if request.method == 'POST':
         category = session.query(Category).filter_by(id = category_id).one()
         item = Item()
         item.name = request.form['name']
         item.description = request.form['description']
         item.category = category
+        item.user = user
         session.add(item)
         session.commit()
         flash('"%s" created succesfully!' % item.name)
@@ -48,7 +57,7 @@ def createItem(category_id):
         categories = session.query(Category).order_by(sqlalchemy.asc(Category.name)).all()
         category = session.query(Category).filter_by(id = category_id).one()
         items = session.query(Item).filter_by(category_id = category.id).all()
-        return render_template('item.create.html', user=getUserInfo(), categories=categories, category=category, items=items)
+        return render_template('item.create.html', user=user, categories=categories, category=category, items=items)
 
 @app.route('/item/<int:item_id>')
 def showItem(item_id):
@@ -56,12 +65,24 @@ def showItem(item_id):
     item = session.query(Item).filter_by(id = item_id).one()
     category = item.category
     items = session.query(Item).filter_by(category_id = category.id).all()
-    return render_template('item.html', user=getUserInfo(), categories=categories, category=category, items=items,item=item)
+    user = getUserInfo()
+    return render_template('item.html', user=user, categories=categories, category=category, items=items,item=item)
 
 @app.route('/item/<int:item_id>/edit', methods=['GET', 'POST'])
 def editItem(item_id):
+    user = getUserInfo()
+    if(not user):
+        return make_response(
+            render_template('error.html', code=401, message='Please login to delete items.'),
+            401
+        )
+    item = session.query(Item).filter_by(id = item_id).one()
+    if(user.id != item.user_id):
+        return make_response(
+            render_template('error.html', code=401, message='You can only delete your own items.'),
+            403
+        )
     if request.method == 'POST':
-        item = session.query(Item).filter_by(id = item_id).one()
         item.name = request.form['name']
         item.description = request.form['description']
         session.add(item)
@@ -70,15 +91,25 @@ def editItem(item_id):
         return redirect(url_for('showItem', item_id=item.id))
     else:
         categories = session.query(Category).order_by(sqlalchemy.asc(Category.name)).all()
-        item = session.query(Item).filter_by(id = item_id).one()
         category = item.category
         items = session.query(Item).filter_by(category_id = category.id).all()
-        return render_template('item.edit.html', user=getUserInfo(), categories=categories, category=category, items=items,item=item)
+        return render_template('item.edit.html', user=user, categories=categories, category=category, items=items,item=item)
 
 @app.route('/item/<int:item_id>/delete', methods=['GET', 'POST'])
 def deleteItem(item_id):
+    user = getUserInfo()
+    if(not user):
+        return make_response(
+            render_template('error.html', code=401, message='Please login to delete items.'),
+            401
+        )
+    item = session.query(Item).filter_by(id = item_id).one()
+    if(user.id != item.user_id):
+        return make_response(
+            render_template('error.html', code=401, message='You can only delete your own items.'),
+            403
+        )
     if request.method == 'POST':
-        item = session.query(Item).filter_by(id = item_id).one()
         category_id = item.category_id
         session.delete(item)
         session.commit()
@@ -86,10 +117,9 @@ def deleteItem(item_id):
         return redirect(url_for('showCategory', category_id=category_id))
     else:
         categories = session.query(Category).order_by(sqlalchemy.asc(Category.name)).all()
-        item = session.query(Item).filter_by(id = item_id).one()
         category = item.category
         items = session.query(Item).filter_by(category_id = category.id).all()
-        return render_template('item.delete.html', user=getUserInfo(), categories=categories, category=category, items=items,item=item)
+        return render_template('item.delete.html', user=user, categories=categories, category=category, items=items,item=item)
 
 @app.route('/login')
 def showLogin():
@@ -230,7 +260,15 @@ def getUserID(email):
     except:
         return None
 
-if __name__ == '__main__':
+def main():
     app.secret_key = 'my_secret_key'
     app.debug = True
     app.run(host='0.0.0.0', port=5001)
+
+if __name__ == '__main__':
+    try:
+        main()
+    finally:
+        session.close()
+        engine.dispose()
+        print("session and db engine removed.")

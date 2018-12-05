@@ -15,9 +15,19 @@
 {% block nav %}
 <div class="list-group list-group-flush">
     {% for item in items %}
-    <a class="list-group-item" href = "{{url_for('showItem', item_id = item.id)}}">{{item.name}}</a>
+      <a class="list-group-item" href = "{{url_for('showItem', item_id = item.id)}}">
+        {{item.name}}
+      </a>
     {% endfor %}
-    <a class="list-group-item" href = "{{url_for('createItem', category_id = category.id)}}"> + New Item</a>
+    {% if user %}
+    <a class="list-group-item" href = "{{url_for('createItem', category_id = category.id)}}">
+      + New Item
+    </a>
+    {% else %}
+    <a class="list-group-item disabled">
+      <span data-toggle="tooltip" data-placement="top" title="Login to add new items">+ New Item</span>
+    </a>
+    {% endif %}
 </div>
 {% endblock %}
 

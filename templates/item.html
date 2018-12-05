@@ -22,15 +22,40 @@
 {% block nav %}
 <div class="list-group list-group-flush">
     {% for item in items %}
-    <a class="list-group-item" href = "{{url_for('showItem', item_id = item.id)}}">{{item.name}}</a>
+        <a class="list-group-item" href = "{{url_for('showItem', item_id = item.id)}}">
+            {{item.name}}
+        </a>
     {% endfor %}
-    <a class="list-group-item" href = "{{url_for('createItem', category_id = category.id)}}"> + New Item</a>
+    {% if user %}
+    <a class="list-group-item" href = "{{url_for('createItem', category_id = category.id)}}">
+      + New Item
+    </a>
+    {% else %}
+    <a class="list-group-item disabled">
+      <span data-toggle="tooltip" data-placement="top" title="Login to add new items">+ New Item</span>
+    </a>
+    {% endif %}
 </div>
 {% endblock %}
 
 {% block content %}
-<a href="{{url_for('editItem', item_id = item.id)}}">Edit</a>
-<a href="{{url_for('deleteItem', item_id = item.id)}}">Delete</a>
+
+{% if user.id == item.user_id %}
+<div class="float-right">
+    <a href="{{url_for('editItem', item_id = item.id)}}">Edit</a>
+    <a href="{{url_for('deleteItem', item_id = item.id)}}">Delete</a>
+</div>
+{% endif %}
+
 <h1>{{item.name}}</h1>
 <p>{{item.description}}</p>
+<p>
+    {% if item.user %}
+    <em>Author: {{item.user.name}}</em>
+    <img class="rounded" style="width: 70px;" src="{{item.user.picture}}"/>
+    {% else %}
+    <em>No author</em>
+    {% endif %}
+</p>
+
 {% endblock %}
