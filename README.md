@@ -10,20 +10,29 @@ It aims to fulfill the rubric: https://review.udacity.com/#!/rubrics/5/view
 
 #### Requirements
 
-This project uses Python 3
+This project uses Python 3. Requires a few third-party Python libraries.
 
-Requires a few third-party Python libraries:
+**Method 1: Install requirements separately using pip3.**
+
 ```
 pip3 install httplib2
 pip3 install flask
 pip3 install sqlalchemy
 ```
 
+**Method 1: Use `virtualenv` and `requirements.txt` to install packages.**
+
+```
+virtualenv venv
+source venv/bin/activate
+pip3 install -r requirements.txt
+```
+
 #### Setup
 
 1) Create a new Github app, you can do so here https://github.com/settings/apps
 
-2) Obtiain Github app client id and client secret
+2) Obtain Github app client id and client secret
 
 3) Create a config file and use the json format below:
 ```
@@ -46,6 +55,7 @@ $ python3 ./scripts/database_populate.py
 ### Run the project
 
 ```
+source venv/bin/activate
 python3 catalog.py
 ```
 
