@@ -1,12 +1,14 @@
 #!usr/bin/env python3
 
+import json
+
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 from database_setup import Base, Item, Category, User
 
-
-engine = create_engine('sqlite:///data/catalog.db')
+db_url = json.loads(open('config/database.json', 'r').read())['url']
+engine = create_engine(db_url)
 
 Base.metadata.bind = engine
 DBSession = sessionmaker(bind=engine)

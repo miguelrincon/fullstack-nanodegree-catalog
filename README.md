@@ -2,7 +2,7 @@
 
 The item catalog is part of the the Fullstack Developer Nanodegree program. It is a catalog of items which allows people to view products sorted by category in a web application.
 
-It allows users to register and create, edit or delete their own products using third-party authentication. The authentication is provided by Github Oauth API.
+It allows users to register and create, edit or delete their own products using third-party authentication. The authentication is provided by Github Oauth API. Depending on the configuration, it is compatible with SQLite and PostgreSQL databases.
 
 It aims to fulfill the rubric: https://review.udacity.com/#!/rubrics/5/view
 
@@ -18,9 +18,10 @@ This project uses Python 3. Requires a few third-party Python libraries.
 pip3 install httplib2
 pip3 install flask
 pip3 install sqlalchemy
+pip3 install psycopg2
 ```
 
-**Method 1: Use `virtualenv` and `requirements.txt` to install packages.**
+**Method 2: Use `virtualenv` and `requirements.txt` to install packages.**
 
 ```
 virtualenv venv
@@ -47,7 +48,7 @@ $ touch config/github_secrets.json
 4) Create and populate the database
 
 ```
-$ rm -f data/catalog.db   # Clean old data if needed
+$ rm -f data/catalog.db   # Clean old sqlite data if needed
 $ python3 ./scripts/database_setup.py 
 $ python3 ./scripts/database_populate.py 
 ```

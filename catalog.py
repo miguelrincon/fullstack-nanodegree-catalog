@@ -18,8 +18,9 @@ from scripts.database_setup import Base, User, Category, Item
 app = Flask(__name__)
 
 # Connect to Database and create database session
-engine = sqlalchemy.create_engine(
-    'sqlite:///data/catalog.db', connect_args={'check_same_thread': False})
+db_url = json.loads(open('config/database.json', 'r').read())['url']
+# engine = sqlalchemy.create_engine(db_url, connect_args={'check_same_thread': False})
+engine = sqlalchemy.create_engine(db_url)
 Base.metadata.bind = engine
 DBSession = sessionmaker(bind=engine)
 session = DBSession()

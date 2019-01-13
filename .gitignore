@@ -1,8 +1,14 @@
+# Python files
 venv/
 __pycache__
 *.__pycache__
 
+# Dev environment
 .vscode
 
-data/
+# Configuration
 github_secrets.json
+database.json
+
+# SQLite data
+data/
