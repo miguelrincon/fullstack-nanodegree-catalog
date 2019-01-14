@@ -209,12 +209,13 @@ def showLogin():
 
     # Create Github Oauth API URL, see:
     # https://developer.github.com/apps/building-oauth-apps/authorizing-oauth-apps/#1-request-a-users-github-identity
+    redirect_uri = '%s://%s/github-callback' % (request.scheme, request.host)
     github_authorize_url = 'https://github.com/login/oauth/authorize?' + \
         urlencode({
             'client_id': app_id,
             'state': state,
             'scope': 'user',
-            'redirect_uri': 'http://localhost:5001/github-callback'
+            'redirect_uri': redirect_uri
         })
     return render_template('login.html', user=getUserInfo(),
                            github_authorize_url=github_authorize_url,
@@ -281,12 +282,13 @@ def githubCallback():
     app_secret = json.loads(
         open(gh_config_file, 'r').read())['web']['app_secret']
 
+    redirect_uri = '%s://%s/github-callback' % (request.scheme, request.host)
     github_access_token_url = \
         'https://github.com/login/oauth/access_token?' + urlencode({
             'client_id': app_id,
             'client_secret': app_secret,
             'code': code,
-            'redirect_uri': 'http://localhost:5001/github-callback',
+            'redirect_uri': redirect_uri,
             'state': state
         })
     h = httplib2.Http()
