@@ -202,8 +202,9 @@ def showLogin():
                     for x in range(32))
     login_session['state'] = state
 
-
-    app_id = json.loads(open('config/github_secrets.json',
+    here = os.path.dirname(__file__)
+    gh_config_file = os.path.join(here, 'config', 'github_secrets.json')
+    app_id = json.loads(open(gh_config_file,
                              'r').read())['web']['app_id']
 
     # Create Github Oauth API URL, see:
