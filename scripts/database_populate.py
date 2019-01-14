@@ -1,13 +1,17 @@
 #!usr/bin/env python3
 
 import json
+import os
 
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
 
 from database_setup import Base, Item, Category, User
 
-db_url = json.loads(open('config/database.json', 'r').read())['url']
+
+here = os.path.dirname(__file__)
+db_config_file = os.path.join(here, '..', 'config', 'database.json')
+db_url = json.loads(open(db_config_file, 'r').read())['url']
 engine = create_engine(db_url)
 
 Base.metadata.bind = engine

@@ -1,6 +1,7 @@
 #!usr/bin/env python3
 
 import json
+import os
 
 from sqlalchemy import Column, ForeignKey, Integer, String, DateTime
 from sqlalchemy.ext.declarative import declarative_base
@@ -87,7 +88,12 @@ class Item(Base):
             'category_id': self.category_id
         }
 
-db_url = json.loads(open('config/database.json', 'r').read())['url']
-engine = create_engine(db_url)
-Base.metadata.create_all(engine)
-engine.dispose()
+
+if __name__ == '__main__':
+    here = os.path.dirname(__file__)
+    db_config_file = os.path.join(here, '..', 'config', 'database.json')
+    db_url = json.loads(open(db_config_file, 'r').read())['url']
+    print(db_url)
+    engine = create_engine(db_url)
+    Base.metadata.create_all(engine)
+    engine.dispose()

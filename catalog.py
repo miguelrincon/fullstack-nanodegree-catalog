@@ -1,6 +1,7 @@
 #!usr/bin/env python3
 
 import json
+import os
 import random
 import string
 from urllib.parse import urlencode
@@ -18,7 +19,9 @@ from scripts.database_setup import Base, User, Category, Item
 app = Flask(__name__)
 
 # Connect to Database and create database session
-db_url = json.loads(open('config/database.json', 'r').read())['url']
+here = os.path.dirname(__file__)
+db_config_file = os.path.join(here, 'config', 'database.json')
+db_url = json.loads(open(db_config_file, 'r').read())['url']
 # engine = sqlalchemy.create_engine(db_url, connect_args={'check_same_thread': False})
 engine = sqlalchemy.create_engine(db_url)
 Base.metadata.bind = engine
@@ -199,6 +202,7 @@ def showLogin():
                     for x in range(32))
     login_session['state'] = state
 
+
     app_id = json.loads(open('config/github_secrets.json',
                              'r').read())['web']['app_id']
 
@@ -219,10 +223,12 @@ def showLogin():
 @app.route('/logout')
 def logout():
     access_token = login_session['github_access_token']
-    app_id = json.loads(open('config/github_secrets.json',
+    here = os.path.dirname(__file__)
+    gh_config_file = os.path.join(here, 'config', 'github_secrets.json')
+    app_id = json.loads(open(gh_config_file,
                              'r').read())['web']['app_id']
     app_secret = json.loads(
-        open('config/github_secrets.json', 'r').read())['web']['app_secret']
+        open(gh_config_file, 'r').read())['web']['app_secret']
 
     # Revoke a session token, see:
     # https://developer.github.com/v3/oauth_authorizations/#delete-an-authorization
@@ -267,10 +273,12 @@ def githubCallback():
 
     # Request long term access token from Github Oauth API:
     # https://developer.github.com/apps/building-oauth-apps/authorizing-oauth-apps/#2-users-are-redirected-back-to-your-site-by-github
-    app_id = json.loads(open('config/github_secrets.json',
+    here = os.path.dirname(__file__)
+    gh_config_file = os.path.join(here, 'config', 'github_secrets.json')
+    app_id = json.loads(open(gh_config_file,
                              'r').read())['web']['app_id']
     app_secret = json.loads(
-        open('config/github_secrets.json', 'r').read())['web']['app_secret']
+        open(gh_config_file, 'r').read())['web']['app_secret']
 
     github_access_token_url = \
         'https://github.com/login/oauth/access_token?' + urlencode({
