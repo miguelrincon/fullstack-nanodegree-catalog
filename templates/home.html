@@ -4,6 +4,24 @@
 {% endblock %}
 {% block content %}
 <p>
-    Welcome to our catalog of products.
+    Welcome Miguel's catalog of products. :)
+</p>
+<p>
+    This project is a working example of a <strong>Flask + Python 3</strong> application which manages a catalog of products. The persistence layer of the application uses <strong>PostgreSQL</strong>.
+</p>
+<p>
+    Additionally, the application:
+    <ul>
+        <li>Integrates with <strong>Github OAuth</strong> to manage authentication of users (try to login!)</li>
+        <li>Allows <strong>authenticated users</strong> to create and manage their own products</li>
+        <li>Places the Github profile avatar of the author next to the product</li>
+        <li>Runs with configuration from <strong>configuration files</strong> which are only available in the server</li>
+        <li>Runs in an Amazon Web Services (<strong>AWS EC2</strong>) instance in the cloud, via a <strong>Apache2 + WSGI</strong> application</li>
+    </ul>
+
+    I setup and configured the entire stack, providing a web front-end, simple REST APIs, Database setup and initial data, Ubuntu Linux setup on AWS EC2 ins    tance.
+</p>
+<p>
+    You may find the source code, please post issues, and fork my project in: <a href="https://github.com/miguelrincon/fullstack-nanodegree-catalog">https://github.com/miguelrincon/fullstack-nanodegree-catalog</a>
 </p>
 {% endblock %}

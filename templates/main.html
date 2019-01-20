@@ -7,13 +7,13 @@
 
     {% block head %}
     {% endblock %}
-    <title>{% block title %}{% endblock %} | Catalog</title>
+    <title>{% block title %}{% endblock %} | Catalog M</title>
   </head>
   <body>
     <div class="container">
-        <div class="row">
+        <div class="row" style="margin: 0.5em 0;">
             <div class="col">
-                <a class="h1" href="/">Catalog</a>
+                <a class="h1" href="/">Catalog M</a>
             </div>
             <div class="col text-right">
                 {% if user %}
@@ -76,6 +76,11 @@
                 {% endblock %}
             </div>
         </div>
+        <footer class="row" style="margin: 1em 0;">
+            <div class="col text-center">
+                <small>app by <a href="https://miguelrincon.github.io/" target="_blank">me</a></small>
+            </div>
+        </footer>
     </div>
 
     <!-- Optional JavaScript -->
